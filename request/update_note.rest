@@ -1,0 +1,7 @@
+PUT http://localhost:3001/api/notes/63b25b5821434b7d9b837dd6
+Content-Type: application/json
+
+{
+    "content": "data bases de pueba en mongo",
+    "important": false
+}
