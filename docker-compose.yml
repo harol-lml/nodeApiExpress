@@ -1,0 +1,6 @@
+web:
+  image: note-api
+  volumes:
+    - express:/app
+  ports:
+    - "3001:3001"

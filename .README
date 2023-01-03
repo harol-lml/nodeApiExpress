@@ -1,0 +1,11 @@
+##########
+Comando para crear la imagen de docker
+1. docker build -t note-api .
+
+Comando para correr la imagen de docker
+
+usando docker-compose.yml
+ docker-compose up -d
+
+Comando para bajar la imagen de docker 
+docker-compose down
