@@ -5,10 +5,9 @@ const Note = require('./models/Note')
 const {createNoteSchema, getNoteSchema, updateNoteSchema} = require('./models/schemas')
 const { response, request } = require('express')
 const express = require('express')
-const app = express()
 const middleware = require('./middleware/middleware')
 const validate = require('express-joi-validate');
-
+const app = express()
 
 app.use(express.json())
 
@@ -47,7 +46,7 @@ app.put('/api/notes/:id', validate(updateNoteSchema),(request, response, next) =
         .catch(e => {/* next(e) */})
 })
 
-app.delete('/api/notes/:id', (request, response, next) => {
+app.delete('/api/notes/:id', validate(getNoteSchema), (request, response, next) => {
     const {id} = request.params
 
     Note.findByIdAndRemove(id).then(result => {
@@ -58,12 +57,6 @@ app.delete('/api/notes/:id', (request, response, next) => {
 
 app.post('/api/notes', middleware(createNoteSchema), (request, response) => {
     const note = request.body
-
-    /* if (!note || !note.content)
-        return response.status(400).json({
-            error: 'note data is massing'
-        }) */
-
 
     const nNote = new Note({
         content: note.content,
