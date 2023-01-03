@@ -1,0 +1,4 @@
+GET http://localhost:3001/api/notes/63b38121ef18c6f3a1167fff
+
+####
+GET http://localhost:3001/api/notes/wdweferfger

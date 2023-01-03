@@ -2,11 +2,12 @@ require('dotenv').config()
 require('./mongo')
 
 const Note = require('./models/Note')
+const {createNoteSchema, getNoteSchema, updateNoteSchema} = require('./models/schemas')
 const { response, request } = require('express')
 const express = require('express')
 const app = express()
-const notFound = require('./middleware/notFound.js')
-const handleErrors = require('./middleware/handleErrors.js')
+const middleware = require('./middleware/middleware')
+const validate = require('express-joi-validate');
 
 
 app.use(express.json())
@@ -20,26 +21,19 @@ app.get('/api/notes', (request, response) => {
     Note.find({}).then( notes => response.json(notes))
 })
 
-app.get('/api/notes/:id', (request, response, next) => {
+app.get('/api/notes/:id', validate(getNoteSchema), (request, response, next) => {
     const {id} = request.params
 
     Note.findById(id).then(note => {
         if (note)
             response.json(note)
-        response.status(404).end()
     }).catch(e => {
-        next(e)
     })
 })
 
-app.put('/api/notes/:id',  (request, response, next) => {
+app.put('/api/notes/:id', validate(updateNoteSchema),(request, response, next) => {
     const {id} = request.params
     const note = request.body
-
-    if (!note || !note.content)
-        return response.status(400).json({
-            error: 'note data is massing'
-        })
 
     const nNoteInfo = {
         content: note.content,
@@ -50,7 +44,7 @@ app.put('/api/notes/:id',  (request, response, next) => {
         .then(result => {
             response.json(result)
         })
-        .catch(e => next(e))
+        .catch(e => {/* next(e) */})
 })
 
 app.delete('/api/notes/:id', (request, response, next) => {
@@ -62,13 +56,13 @@ app.delete('/api/notes/:id', (request, response, next) => {
     }).catch(e => next(e))
 })
 
-app.post('/api/notes', (request, response) => {
+app.post('/api/notes', middleware(createNoteSchema), (request, response) => {
     const note = request.body
 
-    if (!note || !note.content)
+    /* if (!note || !note.content)
         return response.status(400).json({
             error: 'note data is massing'
-        })
+        }) */
 
 
     const nNote = new Note({
@@ -82,9 +76,6 @@ app.post('/api/notes', (request, response) => {
     })
 
 })
-
-app.use(notFound)
-app.use(handleErrors)
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {
